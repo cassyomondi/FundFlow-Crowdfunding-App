@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
-from models import db, User, Campaign
+from models import db, User, Campaign, Donation
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fundflow.db'
@@ -47,7 +47,6 @@ def handle_campaigns():
         data = request.get_json()
         if not data.get('title') or not data.get('funding_goal') or not data.get('user_id'):
             return jsonify({'error': 'Title, funding goal, and user ID required'}), 400
-        
         if not User.query.get(data['user_id']):
             return jsonify({'error': 'User ID does not exist'}), 404
         campaign = Campaign(
@@ -79,6 +78,30 @@ def handle_campaign(id):
         db.session.delete(campaign)
         db.session.commit()
         return jsonify({'message': 'Campaign deleted'}), 204
+
+@app.route('/donations', methods=['GET', 'POST'])
+def handle_donations():
+    if request.method == 'GET':
+        donations = Donation.query.all()
+        return jsonify([donation.to_dict() for donation in donations]), 200
+    elif request.method == 'POST':
+        data = request.get_json()
+        if not data.get('user_id') or not data.get('campaign_id') or not data.get('amount'):
+            return jsonify({'error': 'User ID, campaign ID, and amount required'}), 400
+        if data['amount'] <= 0:
+            return jsonify({'error': 'Amount must be greater than 0'}), 400
+        if not User.query.get(data['user_id']):
+            return jsonify({'error': 'User ID does not exist'}), 404
+        if not Campaign.query.get(data['campaign_id']):
+            return jsonify({'error': 'Campaign ID does not exist'}), 404
+        donation = Donation(
+            user_id=data['user_id'],
+            campaign_id=data['campaign_id'],
+            amount=data['amount']
+        )
+        db.session.add(donation)
+        db.session.commit()
+        return jsonify(donation.to_dict()), 201
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
