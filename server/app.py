@@ -1,14 +1,14 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
-
+from models import db, User
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fundflow.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
+db.init_app(app)
 migrate = Migrate(app, db)
 CORS(app)
 
@@ -16,5 +16,27 @@ CORS(app)
 def home():
     return {"message": "FundFlow backend is running 🚀"}
 
+@app.route('/users', methods=['GET', 'POST'])
+def handle_users():
+    if request.method == 'GET':
+        users = User.query.all()
+        return jsonify([user.to_dict() for user in users]), 200
+    elif request.method == 'POST':
+        data = request.get_json()
+        if not data.get('username') or not data.get('email') or not data.get('password'):
+            return jsonify({'error': 'Username, email, and password required'}), 400
+        if User.query.filter_by(username=data['username']).first():
+            return jsonify({'error': 'Username already exists'}), 400
+        if User.query.filter_by(email=data['email']).first():
+            return jsonify({'error': 'Email already exists'}), 400
+        user = User(
+            username=data['username'],
+            email=data['email'],
+            password=data['password']
+        )
+        db.session.add(user)
+        db.session.commit()
+        return jsonify(user.to_dict()), 201
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=5000, debug=True)
