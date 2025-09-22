@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
-from models import db, User
+from models import db, User, Campaign
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fundflow.db'
@@ -37,6 +37,48 @@ def handle_users():
         db.session.add(user)
         db.session.commit()
         return jsonify(user.to_dict()), 201
+
+@app.route('/campaigns', methods=['GET', 'POST'])
+def handle_campaigns():
+    if request.method == 'GET':
+        campaigns = Campaign.query.all()
+        return jsonify([campaign.to_dict() for campaign in campaigns]), 200
+    elif request.method == 'POST':
+        data = request.get_json()
+        if not data.get('title') or not data.get('funding_goal') or not data.get('user_id'):
+            return jsonify({'error': 'Title, funding goal, and user ID required'}), 400
+        
+        if not User.query.get(data['user_id']):
+            return jsonify({'error': 'User ID does not exist'}), 404
+        campaign = Campaign(
+            title=data['title'],
+            description=data.get('description', ''),
+            funding_goal=data['funding_goal'],
+            user_id=data['user_id']
+        )
+        db.session.add(campaign)
+        db.session.commit()
+        return jsonify(campaign.to_dict()), 201
+
+@app.route('/campaigns/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def handle_campaign(id):
+    campaign = Campaign.query.get_or_404(id)
+    if request.method == 'GET':
+        return jsonify(campaign.to_dict()), 200
+    elif request.method == 'PATCH':
+        data = request.get_json()
+        if 'title' in data:
+            campaign.title = data['title']
+        if 'description' in data:
+            campaign.description = data['description']
+        if 'funding_goal' in data:
+            campaign.funding_goal = data['funding_goal']
+        db.session.commit()
+        return jsonify(campaign.to_dict()), 200
+    elif request.method == 'DELETE':
+        db.session.delete(campaign)
+        db.session.commit()
+        return jsonify({'message': 'Campaign deleted'}), 204
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
