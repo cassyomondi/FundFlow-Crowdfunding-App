@@ -16,13 +16,7 @@ class User(db.Model, SerializerMixin):
     campaigns = db.relationship('Campaign', backref='creator', lazy=True)
     donations = db.relationship('Donation', backref='donor', lazy=True)
     
-    serialize_rules = ('-campaigns.creator', '-donations.donor', '-password_hash',)
-
-    def set_password(self, password):
-        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
-
-    def check_password(self, password):
-        return bcrypt.check_password_hash(self.password_hash, password)
+    serialize_rules = ('-password_hash', '-campaigns', '-donations',)
 
 class Campaign(db.Model, SerializerMixin):
     __tablename__ = 'campaigns'
@@ -35,7 +29,7 @@ class Campaign(db.Model, SerializerMixin):
 
     donations = db.relationship('Donation', backref='campaign', lazy=True)
 
-    serialize_rules = ('-creator.campaigns', '-donations.campaign',)
+    serialize_rules = ('-donations',)
 
 class Donation(db.Model, SerializerMixin):
     __tablename__ = 'donations'
@@ -45,4 +39,4 @@ class Donation(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     campaign_id = db.Column(db.Integer, db.ForeignKey('campaigns.id'), nullable=False)
 
-    serialize_rules = ('-donor.donations', '-campaign.donations',)
+    serialize_rules = ('-donor', '-campaign',)
