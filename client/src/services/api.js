@@ -1,7 +1,11 @@
 import axios from "axios";
 
-const api = axios.create({
-  baseURL: "http://127.0.0.1:5000", // Jackson’s Flask backend
+const API = axios.create({
+  baseURL: "http://127.0.0.1:5000", // Flask backend (once running)
 });
 
-export default api;
+// Example functions
+export const fetchCampaigns = () => API.get("/campaigns");
+export const createCampaign = (data) => API.post("/campaigns", data);
+
+export default API;
