@@ -13,6 +13,10 @@ migrate = Migrate(app, db)
 bcrypt.init_app(app)
 CORS(app)
 
+@app.route('/')
+def home():
+    return jsonify({'message': 'Welcome to FundFlow API'})
+
 @app.route('/users', methods=['GET', 'POST'])
 def handle_users():
     if request.method == 'GET':
