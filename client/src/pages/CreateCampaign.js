@@ -1,6 +1,6 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-// import axios from "axios"; // uncomment when backend is ready
+import { createCampaign } from "../services/api";
 
 function CreateCampaign() {
   const initialValues = {
@@ -23,18 +23,16 @@ function CreateCampaign() {
 
     resetForm(); // clear the form after submission
 
-    /* 
-    ****Later: connect to backend****
-    axios.post("http://localhost:5000/campaigns", values)
-      .then((response) => {
-        console.log("Campaign saved:", response.data);
-        alert("Campaign created successfully!");
-        resetForm();
-      })
-      .catch((error) => {
-        console.error("Error creating campaign:", error);
-        alert("Failed to create campaign. Please try again.");
-      });
+    // Uncomment this once backend /campaigns endpoint is live
+    /*
+    createCampaign(values)
+    .then((response) => {
+      alert("Campaign created successfully!");
+      console.log(response.data);
+    })
+    .catch((error) => {
+      console.error("Error creating campaign:", error);
+    });
     */
   };
 

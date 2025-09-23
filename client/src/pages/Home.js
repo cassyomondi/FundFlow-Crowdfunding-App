@@ -1,19 +1,20 @@
+import { useEffect, useState } from "react";
+import { fetchCampaigns } from "../services/api";
 import CampaignCard from "../components/CampaignCard";
-// import { useEffect, useState } from "react";
-// import axios from "axios";
 
 function Home() {
-  // For later, when backend is ready
+  
+  // Uncomment this once backend /campaigns endpoint is live
   /*
   const [campaigns, setCampaigns] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/campaigns/featured")
+    fetchCampaigns()
       .then((response) => {
         setCampaigns(response.data);
       })
       .catch((error) => {
-        console.error("Error fetching featured campaigns:", error);
+        console.error("Error fetching campaigns:", error);
       });
   }, []);
   */
