@@ -114,7 +114,7 @@ def create_campaign_protected():
 
 @app.route('/campaigns/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def handle_campaign(id):
-    campaign = Campaign.query.get(id)
+    campaign = db.session.get(Campaign, id)
     if not campaign:
         return jsonify({'error': 'Campaign not found'}), 404
 
