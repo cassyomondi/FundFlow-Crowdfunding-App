@@ -6,34 +6,37 @@ function CreateCampaign() {
   const initialValues = {
     title: "",
     description: "",
-    goal: "",
+    funding_goal: "",
   };
 
   const validationSchema = Yup.object({
     title: Yup.string().required("Title is required"),
     description: Yup.string().required("Description is required"),
-    goal: Yup.number()
+    funding_goal: Yup.number()
+      .typeError("Goal must be a number")
       .positive("Goal must be positive")
       .required("Goal amount is required"),
   });
 
   const handleSubmit = (values, { resetForm }) => {
-    //Temporary: show alert
-    alert(`Campaign Created!\n\nTitle: ${values.title}\nDescription: ${values.description}\nGoal: ${values.goal}`);
+    const payload = {
+      ...values,
+      funding_goal: Number(values.funding_goal), // ✅ ensure numeric
+      user_id: 1, // ✅ placeholder until auth is wired
+    };
 
-    resetForm(); // clear the form after submission
+    console.log("Submitting campaign:", payload); // 🔍 debug log
 
-    // Uncomment this once backend /campaigns endpoint is live
-    /*
-    createCampaign(values)
-    .then((response) => {
-      alert("Campaign created successfully!");
-      console.log(response.data);
-    })
-    .catch((error) => {
-      console.error("Error creating campaign:", error);
-    });
-    */
+    createCampaign(payload)
+      .then((response) => {
+        alert("Campaign created successfully!");
+        console.log("Created campaign:", response.data);
+        resetForm();
+      })
+      .catch((error) => {
+        console.error("Error creating campaign:", error.response?.data || error);
+        alert(error.response?.data?.error || "Error creating campaign.");
+      });
   };
 
   return (
@@ -48,7 +51,13 @@ function CreateCampaign() {
         backgroundColor: "#fff",
       }}
     >
-      <h2 style={{ textAlign: "center", marginBottom: "1.5rem", color: "#2c3e50" }}>
+      <h2
+        style={{
+          textAlign: "center",
+          marginBottom: "1.5rem",
+          color: "#2c3e50",
+        }}
+      >
         Create a Campaign
       </h2>
 
@@ -57,9 +66,14 @@ function CreateCampaign() {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        <Form style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
+        <Form
+          style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}
+        >
+          {/* Title */}
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={{ marginBottom: "0.5rem", fontWeight: "500" }}>Title</label>
+            <label style={{ marginBottom: "0.5rem", fontWeight: "500" }}>
+              Title
+            </label>
             <Field
               name="title"
               placeholder="Enter campaign title"
@@ -67,7 +81,6 @@ function CreateCampaign() {
                 padding: "0.75rem",
                 borderRadius: "6px",
                 border: "1px solid #ccc",
-                outline: "none",
                 fontSize: "1rem",
               }}
             />
@@ -78,8 +91,11 @@ function CreateCampaign() {
             />
           </div>
 
+          {/* Description */}
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={{ marginBottom: "0.5rem", fontWeight: "500" }}>Description</label>
+            <label style={{ marginBottom: "0.5rem", fontWeight: "500" }}>
+              Description
+            </label>
             <Field
               as="textarea"
               name="description"
@@ -89,7 +105,6 @@ function CreateCampaign() {
                 padding: "0.75rem",
                 borderRadius: "6px",
                 border: "1px solid #ccc",
-                outline: "none",
                 fontSize: "1rem",
                 resize: "vertical",
               }}
@@ -101,27 +116,30 @@ function CreateCampaign() {
             />
           </div>
 
+          {/* Funding Goal */}
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={{ marginBottom: "0.5rem", fontWeight: "500" }}>Goal Amount</label>
+            <label style={{ marginBottom: "0.5rem", fontWeight: "500" }}>
+              Funding Goal
+            </label>
             <Field
               type="number"
-              name="goal"
+              name="funding_goal"
               placeholder="e.g. 5000"
               style={{
                 padding: "0.75rem",
                 borderRadius: "6px",
                 border: "1px solid #ccc",
-                outline: "none",
                 fontSize: "1rem",
               }}
             />
             <ErrorMessage
-              name="goal"
+              name="funding_goal"
               component="div"
               style={{ color: "red", fontSize: "0.9rem", marginTop: "0.25rem" }}
             />
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
             style={{
@@ -135,8 +153,6 @@ function CreateCampaign() {
               cursor: "pointer",
               transition: "background 0.3s",
             }}
-            onMouseOver={(e) => (e.target.style.backgroundColor = "#2980b9")}
-            onMouseOut={(e) => (e.target.style.backgroundColor = "#3498db")}
           >
             Create Campaign
           </button>

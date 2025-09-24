@@ -3,41 +3,40 @@ import { fetchCampaigns } from "../services/api";
 import CampaignCard from "../components/CampaignCard";
 
 function Campaigns() {
-    
-  // Uncomment this once backend /campaigns endpoint is live
-  /*
   const [campaigns, setCampaigns] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchCampaigns()
       .then((response) => {
         setCampaigns(response.data);
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching campaigns:", error);
+        setLoading(false);
       });
   }, []);
-  */
 
   return (
     <div style={{ padding: "1rem" }}>
       <h2>All Campaigns</h2>
 
-      {/*For now: placeholder message */}
-      <p>This page will list all campaigns fetched from the backend.</p>
+      {loading && <p>Loading campaigns...</p>}
 
-      {/* Later: render from backend */}
-      {/*
+      {!loading && campaigns.length === 0 && (
+        <p>No campaigns found. Start by creating one!</p>
+      )}
+
       {campaigns.map((c) => (
         <CampaignCard
           key={c.id}
           title={c.title}
           description={c.description}
-          goal={c.goal}
-          raised={c.raised}
+          goal={c.funding_goal}
+          raised={c.raised || 0}
         />
       ))}
-      */}
     </div>
   );
 }
