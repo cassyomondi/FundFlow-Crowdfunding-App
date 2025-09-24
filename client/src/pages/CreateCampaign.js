@@ -19,15 +19,22 @@ function CreateCampaign() {
   });
 
   const handleSubmit = (values, { resetForm }) => {
+    const token = localStorage.getItem("token"); // JWT from login
+
+    if (!token) {
+      alert("You must be logged in to create a campaign.");
+      return;
+    }
+
     const payload = {
-      ...values,
-      funding_goal: Number(values.funding_goal), // ✅ ensure numeric
-      user_id: 1, // ✅ placeholder until auth is wired
+      title: values.title,
+      description: values.description,
+      funding_goal: Number(values.funding_goal),
     };
 
-    console.log("Submitting campaign:", payload); // 🔍 debug log
+    console.log("Submitting campaign:", payload);
 
-    createCampaign(payload)
+    createCampaign(payload, token)
       .then((response) => {
         alert("Campaign created successfully!");
         console.log("Created campaign:", response.data);
@@ -40,24 +47,8 @@ function CreateCampaign() {
   };
 
   return (
-    <div
-      style={{
-        padding: "2rem",
-        maxWidth: "500px",
-        margin: "2rem auto",
-        border: "1px solid #e0e0e0",
-        borderRadius: "8px",
-        boxShadow: "0 4px 8px rgba(0,0,0,0.05)",
-        backgroundColor: "#fff",
-      }}
-    >
-      <h2
-        style={{
-          textAlign: "center",
-          marginBottom: "1.5rem",
-          color: "#2c3e50",
-        }}
-      >
+    <div style={{ padding: "2rem", maxWidth: "500px", margin: "2rem auto", border: "1px solid #e0e0e0", borderRadius: "8px", boxShadow: "0 4px 8px rgba(0,0,0,0.05)", backgroundColor: "#fff" }}>
+      <h2 style={{ textAlign: "center", marginBottom: "1.5rem", color: "#2c3e50" }}>
         Create a Campaign
       </h2>
 
@@ -66,94 +57,29 @@ function CreateCampaign() {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        <Form
-          style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}
-        >
+        <Form style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
           {/* Title */}
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={{ marginBottom: "0.5rem", fontWeight: "500" }}>
-              Title
-            </label>
-            <Field
-              name="title"
-              placeholder="Enter campaign title"
-              style={{
-                padding: "0.75rem",
-                borderRadius: "6px",
-                border: "1px solid #ccc",
-                fontSize: "1rem",
-              }}
-            />
-            <ErrorMessage
-              name="title"
-              component="div"
-              style={{ color: "red", fontSize: "0.9rem", marginTop: "0.25rem" }}
-            />
+            <label style={{ marginBottom: "0.5rem", fontWeight: "500" }}>Title</label>
+            <Field name="title" placeholder="Enter campaign title" style={{ padding: "0.75rem", borderRadius: "6px", border: "1px solid #ccc", fontSize: "1rem" }} />
+            <ErrorMessage name="title" component="div" style={{ color: "red", fontSize: "0.9rem", marginTop: "0.25rem" }} />
           </div>
 
           {/* Description */}
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={{ marginBottom: "0.5rem", fontWeight: "500" }}>
-              Description
-            </label>
-            <Field
-              as="textarea"
-              name="description"
-              placeholder="Describe your campaign"
-              rows="4"
-              style={{
-                padding: "0.75rem",
-                borderRadius: "6px",
-                border: "1px solid #ccc",
-                fontSize: "1rem",
-                resize: "vertical",
-              }}
-            />
-            <ErrorMessage
-              name="description"
-              component="div"
-              style={{ color: "red", fontSize: "0.9rem", marginTop: "0.25rem" }}
-            />
+            <label style={{ marginBottom: "0.5rem", fontWeight: "500" }}>Description</label>
+            <Field as="textarea" name="description" placeholder="Describe your campaign" rows="4" style={{ padding: "0.75rem", borderRadius: "6px", border: "1px solid #ccc", fontSize: "1rem", resize: "vertical" }} />
+            <ErrorMessage name="description" component="div" style={{ color: "red", fontSize: "0.9rem", marginTop: "0.25rem" }} />
           </div>
 
           {/* Funding Goal */}
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={{ marginBottom: "0.5rem", fontWeight: "500" }}>
-              Funding Goal
-            </label>
-            <Field
-              type="number"
-              name="funding_goal"
-              placeholder="e.g. 5000"
-              style={{
-                padding: "0.75rem",
-                borderRadius: "6px",
-                border: "1px solid #ccc",
-                fontSize: "1rem",
-              }}
-            />
-            <ErrorMessage
-              name="funding_goal"
-              component="div"
-              style={{ color: "red", fontSize: "0.9rem", marginTop: "0.25rem" }}
-            />
+            <label style={{ marginBottom: "0.5rem", fontWeight: "500" }}>Funding Goal</label>
+            <Field type="number" name="funding_goal" placeholder="e.g. 5000" style={{ padding: "0.75rem", borderRadius: "6px", border: "1px solid #ccc", fontSize: "1rem" }} />
+            <ErrorMessage name="funding_goal" component="div" style={{ color: "red", fontSize: "0.9rem", marginTop: "0.25rem" }} />
           </div>
 
-          {/* Submit */}
-          <button
-            type="submit"
-            style={{
-              padding: "0.85rem",
-              border: "none",
-              borderRadius: "6px",
-              backgroundColor: "#3498db",
-              color: "white",
-              fontWeight: "600",
-              fontSize: "1rem",
-              cursor: "pointer",
-              transition: "background 0.3s",
-            }}
-          >
+          <button type="submit" style={{ padding: "0.85rem", border: "none", borderRadius: "6px", backgroundColor: "#3498db", color: "white", fontWeight: "600", fontSize: "1rem", cursor: "pointer", transition: "background 0.3s" }}>
             Create Campaign
           </button>
         </Form>
