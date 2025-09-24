@@ -3,52 +3,42 @@ import { fetchCampaigns } from "../services/api";
 import CampaignCard from "../components/CampaignCard";
 
 function Home() {
-  
-  // Uncomment this once backend /campaigns endpoint is live
-  /*
   const [campaigns, setCampaigns] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchCampaigns()
       .then((response) => {
         setCampaigns(response.data);
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching campaigns:", error);
+        setLoading(false);
       });
   }, []);
-  */
 
   return (
     <div style={{ padding: "1rem" }}>
       <h2>Featured Campaigns</h2>
 
-      {/* ✅ For now: static sample data */}
-      <CampaignCard
-        title="Save the Rainforest"
-        description="Help us protect endangered ecosystems by supporting our conservation campaign."
-        goal={5000}
-        raised={2300}
-      />
-      <CampaignCard
-        title="School Supplies for Kids"
-        description="Providing books and uniforms to underprivileged children."
-        goal={2000}
-        raised={1200}
-      />
+      {loading && <p>Loading campaigns...</p>}
 
-      {/* ✅ Later: render from backend */}
-      {/*
+      {!loading && campaigns.length === 0 && (
+        <p>No campaigns available yet. Be the first to create one!</p>
+      )}
+
       {campaigns.map((c) => (
         <CampaignCard
           key={c.id}
+          // backend field is funding_goal
           title={c.title}
           description={c.description}
-          goal={c.goal}
-          raised={c.raised}
+          goal={c.funding_goal}  
+          // default 0 if not in DB
+          raised={c.raised || 0}  
         />
       ))}
-      */}
     </div>
   );
 }
