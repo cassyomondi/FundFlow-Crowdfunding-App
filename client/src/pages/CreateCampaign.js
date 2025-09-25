@@ -1,8 +1,18 @@
+import { useContext, useEffect } from "react";
+import { AuthContext } from "../context/AuthContext";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { createCampaign } from "../services/api";
+import { createCampaign, setAuthToken } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function CreateCampaign() {
+  const { user, token } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (token) setAuthToken(token);
+  }, [token]);
+
   const initialValues = {
     title: "",
     description: "",
@@ -19,22 +29,29 @@ function CreateCampaign() {
   });
 
   const handleSubmit = (values, { resetForm }) => {
+    if (!token) {
+      alert("You must be logged in to create a campaign.");
+      return;
+    }
+
     const payload = {
-      ...values,
-      funding_goal: Number(values.funding_goal), // ✅ ensure numeric
-      user_id: 1, // ✅ placeholder until auth is wired
+      title: values.title,
+      description: values.description,
+      funding_goal: Number(values.funding_goal),
+      user_id: user.id,
     };
 
-    console.log("Submitting campaign:", payload); // 🔍 debug log
-
-    createCampaign(payload)
+    createCampaign(payload, token)
       .then((response) => {
         alert("Campaign created successfully!");
-        console.log("Created campaign:", response.data);
         resetForm();
+        navigate("/"); // 👈 redirect to home page
       })
       .catch((error) => {
-        console.error("Error creating campaign:", error.response?.data || error);
+        console.error(
+          "Error creating campaign:",
+          error.response?.data || error
+        );
         alert(error.response?.data?.error || "Error creating campaign.");
       });
   };
@@ -66,9 +83,7 @@ function CreateCampaign() {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        <Form
-          style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}
-        >
+        <Form style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
           {/* Title */}
           <div style={{ display: "flex", flexDirection: "column" }}>
             <label style={{ marginBottom: "0.5rem", fontWeight: "500" }}>
@@ -139,7 +154,6 @@ function CreateCampaign() {
             />
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             style={{

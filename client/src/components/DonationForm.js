@@ -1,70 +1,83 @@
-import React, { useState } from 'react';
+import { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { createDonation } from "../services/api";
 
-function DonationForm({ campaign }) {
-  const [amount, setAmount] = useState('');
-  const [message, setMessage] = useState('');
+function DonationForm({ campaignId, onNewDonation }) {
+  const { token, user } = useContext(AuthContext);
+  const [amount, setAmount] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!amount || amount <= 0) {
-      setMessage('Please enter a valid amount');
+    setError("");
+    setSuccess("");
+
+    if (!amount || parseFloat(amount) <= 0) {
+      setError("Please enter a valid donation amount.");
       return;
     }
 
     try {
-      const donationData = {
-        user_id: 1, // For testing - would normally come from login
-        campaign_id: campaign.id,
-        amount: parseFloat(amount)
-      };
-
-      const response = await fetch('http://127.0.0.1:5000/donations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(donationData),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        setMessage('Donation successful! Thank you!');
-        setAmount('');
-      } else {
-        setMessage('Error: ' + result.error);
-      }
-    } catch (error) {
-      setMessage('Network error. Please try again.');
+      const response = await createDonation({ campaign_id: campaignId, amount }, token);
+      onNewDonation(response.data);
+      setSuccess("Donation successful!");
+      setAmount("");
+    } catch (err) {
+      setError(err.response?.data?.error || "Donation failed.");
     }
   };
 
   return (
-    <div style={{ border: '1px solid #ccc', padding: '20px', margin: '20px 0' }}>
-      <h3>Make a Donation</h3>
-      
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '15px' }}>
-          <label>Amount: $ </label>
-          <input 
-            type="number" 
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            style={{ padding: '5px', marginLeft: '10px' }}
-            min="1"
-            required
-          />
-        </div>
-        
-        <button type="submit" style={{ padding: '10px 20px', background: '#007bff', color: 'white', border: 'none' }}>
-          Donate Now
-        </button>
-      </form>
-
-      {message && <p style={{ color: message.includes('Error') ? 'red' : 'green', marginTop: '10px' }}>{message}</p>}
-    </div>
+    <form onSubmit={handleSubmit} style={styles.form}>
+      <input
+        type="number"
+        placeholder="Enter donation amount"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        style={styles.input}
+      />
+      <button type="submit" style={styles.button}>
+        Donate
+      </button>
+      {error && <p style={styles.error}>{error}</p>}
+      {success && <p style={styles.success}>{success}</p>}
+    </form>
   );
 }
+
+const styles = {
+  form: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    margin: "1rem 0",
+  },
+  input: {
+    flex: 1,
+    padding: "0.5rem 0.75rem",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    fontSize: "1rem",
+  },
+  button: {
+    padding: "0.55rem 1rem",
+    borderRadius: "5px",
+    border: "none",
+    backgroundColor: "#1976d2",
+    color: "#fff",
+    fontWeight: "bold",
+    cursor: "pointer",
+    transition: "background 0.3s",
+  },
+  error: {
+    color: "#d32f2f",
+    marginTop: "0.5rem",
+  },
+  success: {
+    color: "#388e3c",
+    marginTop: "0.5rem",
+  },
+};
 
 export default DonationForm;

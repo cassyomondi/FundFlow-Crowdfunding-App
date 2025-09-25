@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { fetchCampaigns } from "../services/api";
 import CampaignCard from "../components/CampaignCard";
@@ -29,15 +30,19 @@ function Home() {
       )}
 
       {campaigns.map((c) => (
-        <CampaignCard
-          key={c.id}
-          // backend field is funding_goal
-          title={c.title}
-          description={c.description}
-          goal={c.funding_goal}  
-          // default 0 if not in DB
-          raised={c.raised || 0}  
-        />
+        <Link 
+          key={c.id} 
+          to={`/campaigns/${c.id}`} 
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <CampaignCard
+            id={c.id}
+            title={c.title}
+            description={c.description}
+            goal={c.funding_goal}
+            raised={c.amount_raised || 0} // ✅ use correct backend field
+          />
+        </Link>
       ))}
     </div>
   );
