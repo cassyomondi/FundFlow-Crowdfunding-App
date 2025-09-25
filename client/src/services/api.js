@@ -1,38 +1,47 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://127.0.0.1:5000", // Flask backend (once running)
+  baseURL: "http://127.0.0.1:5000",
 });
 
-// ========================
-// Campaigns
-// ========================
-export const fetchCampaigns = () => API.get("/campaigns"); // GET all
-export const fetchCampaignById = (id) => API.get(`/campaigns/${id}`); // GET single
+export const setAuthToken = (token) => {
+  if (token) API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  else delete API.defaults.headers.common["Authorization"];
+};
 
-export const createCampaign = (data) =>
-  API.post("/campaigns", {
-    title: data.title,
-    description: data.description,
-    funding_goal: data.funding_goal,
-    user_id: data.user_id,   
+// Campaigns
+export const fetchCampaigns = () => API.get("/campaigns");
+export const fetchCampaignById = (id) => API.get(`/campaigns/${id}`);
+export const createCampaign = (data, token) =>
+  API.post("/campaigns", data, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+// Update an existing campaign
+export const updateCampaign = (id, data, token) =>
+  API.patch(`/campaigns/${id}`, data, {
+    headers: { Authorization: `Bearer ${token}` },
   });
 
+// DELETE campaign
+export const deleteCampaign = (id, token) => {
+  return API.delete(`/campaigns/${id}`, {
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json' // ensure JSON content type
+    },
+    data: {} // 👈 explicitly provide empty object to satisfy Axios/Flask
+  });
+};
 
-export const updateCampaign = (id, data) => API.put(`/campaigns/${id}`, data); // PUT update
-export const deleteCampaign = (id) => API.delete(`/campaigns/${id}`); // DELETE
 
-// ========================
+
+
 // Donations
-// ========================
-export const createDonation = (data) => API.post("/donations", data); // POST donation
-export const fetchDonationsByCampaign = (campaignId) =>
-  API.get(`/campaigns/${campaignId}/donations`); // GET donations for a campaign
+export const createDonation = (data) => API.post("/donations", data);
 
-// ========================
 // Users
-// ========================
-export const createUser = (data) => API.post("/users", data); // Register
-export const fetchUser = (id) => API.get(`/users/${id}`); // Profile
+export const createUser = (data) => API.post("/users", data);
+export const loginUser = (data) => API.post("/login", data);
+export const fetchUser = (id) => API.get(`/users/${id}`);
 
 export default API;

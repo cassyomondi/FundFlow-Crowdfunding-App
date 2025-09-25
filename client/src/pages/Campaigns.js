@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom"; // 
 import { fetchCampaigns } from "../services/api";
 import CampaignCard from "../components/CampaignCard";
+
 
 function Campaigns() {
   const [campaigns, setCampaigns] = useState([]);
@@ -28,15 +30,21 @@ function Campaigns() {
         <p>No campaigns found. Start by creating one!</p>
       )}
 
-      {campaigns.map((c) => (
-        <CampaignCard
-          key={c.id}
-          title={c.title}
-          description={c.description}
-          goal={c.funding_goal}
-          raised={c.raised || 0}
-        />
-      ))}
+{campaigns.map((c) => (
+  <Link 
+    key={c.id} 
+    to={`/campaigns/${c.id}`} 
+    style={{ textDecoration: "none", color: "inherit" }}
+  >
+    <CampaignCard
+      title={c.title}
+      description={c.description}
+      goal={c.funding_goal}
+      raised={c.amount_raised || 0}  // 👈 use "amount_raised"
+    />
+  </Link>
+))}
+
     </div>
   );
 }

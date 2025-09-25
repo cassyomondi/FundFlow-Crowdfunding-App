@@ -5,10 +5,10 @@ with app.app_context():
     db.drop_all()
     db.create_all()
 
-    user1 = User(username='alice', email='alice@example.com')
+    user1 = User(username='alice', email='alicewambui@gmail.com')
     user1.set_password('password123')
 
-    user2 = User(username='bob', email='bob@example.com')
+    user2 = User(username='bob', email='bobcolymore@gmail.com')
     user2.set_password('password456')
 
     db.session.add_all([user1, user2])
