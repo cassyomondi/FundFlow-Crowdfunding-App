@@ -1,7 +1,9 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://fundflow-crowdfunding-app-11.onrender.com",
+  baseURL:
+    process.env.REACT_APP_API_URL ||
+    "https://fundflow-crowdfunding-app-11.onrender.com",
 });
 
 export const setAuthToken = (token) => {
