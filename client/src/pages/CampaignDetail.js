@@ -11,6 +11,8 @@ function CampaignDetail() {
 
   const [campaign, setCampaign] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [editData, setEditData] = useState({ title: "", description: "", funding_goal: 0 });
 
   useEffect(() => {
     fetchCampaignById(id)
@@ -27,21 +29,41 @@ function CampaignDetail() {
     }));
   };
 
-  const handleEdit = async () => {
-    const newTitle = prompt("Enter new title", campaign.title);
-    const newDescription = prompt("Enter new description", campaign.description);
-    if (!newTitle || !newDescription) return;
+  const openEditModal = () => {
+    setEditData({
+      title: campaign.title,
+      description: campaign.description,
+      funding_goal: campaign.funding_goal,
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    const { title, description, funding_goal } = editData;
+    const goalNum = parseFloat(funding_goal);
+
+    if (!title || !description || isNaN(goalNum) || goalNum <= 0) {
+      alert("Please fill all fields correctly.");
+      return;
+    }
+
+    if (goalNum < (campaign.amount_raised || 0)) {
+      alert(`Funding goal cannot be less than the current raised amount (${campaign.amount_raised}).`);
+      return;
+    }
 
     try {
       const response = await updateCampaign(
         campaign.id,
-        { title: newTitle, description: newDescription },
-        token // ✅ include token for authorization
+        { title, description, funding_goal: goalNum },
+        token
       );
       setCampaign(response.data);
+      setEditModalOpen(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to update campaign. Are you logged in?");
+      alert("Failed to update campaign");
     }
   };
 
@@ -49,7 +71,7 @@ function CampaignDetail() {
     if (!window.confirm("Are you sure you want to delete this campaign?")) return;
 
     try {
-      await deleteCampaign(campaign.id, token); // ✅ include token
+      await deleteCampaign(campaign.id, token);
       alert("Campaign deleted");
       navigate("/campaigns");
     } catch (err) {
@@ -78,7 +100,7 @@ function CampaignDetail() {
 
       {isOwner && (
         <div style={{ margin: "1rem 0", display: "flex", gap: "0.5rem" }}>
-          <button style={styles.button} onClick={handleEdit}>Edit</button>
+          <button style={styles.button} onClick={openEditModal}>Edit</button>
           <button style={{ ...styles.button, background: "#e53935" }} onClick={handleDelete}>Delete</button>
         </div>
       )}
@@ -97,6 +119,49 @@ function CampaignDetail() {
         </ul>
       ) : (
         <p>No donations yet. Be the first to donate!</p>
+      )}
+
+      {isEditModalOpen && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <h3>Edit Campaign</h3>
+            <form onSubmit={handleEditSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <input
+                type="text"
+                value={editData.title}
+                onChange={(e) => setEditData({ ...editData, title: e.target.value })}
+                placeholder="Title"
+              />
+              <textarea
+                value={editData.description}
+                onChange={(e) => setEditData({ ...editData, description: e.target.value })}
+                placeholder="Description"
+              />
+              <input
+                type="number"
+                value={editData.funding_goal}
+                onChange={(e) => setEditData({ ...editData, funding_goal: e.target.value })}
+                placeholder="Funding Goal"
+                min={campaign.amount_raised || 1}
+              />
+              {parseFloat(editData.funding_goal) < (campaign.amount_raised || 0) && (
+                <small style={{ color: "red" }}>
+                  Goal cannot be less than current raised ({campaign.amount_raised})
+                </small>
+              )}
+              <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
+                <button type="submit" style={styles.button}>Save</button>
+                <button
+                  type="button"
+                  style={{ ...styles.button, background: "#e53935" }}
+                  onClick={() => setEditModalOpen(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -122,6 +187,26 @@ const styles = {
     background: "#1976d2",
     color: "#fff",
     cursor: "pointer",
+  },
+  modalOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0,0,0,0.5)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1000,
+  },
+  modalContent: {
+    background: "#fff",
+    padding: "2rem",
+    borderRadius: "8px",
+    width: "100%",
+    maxWidth: "400px",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
   },
 };
 
