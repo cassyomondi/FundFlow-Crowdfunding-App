@@ -8,7 +8,7 @@ import re
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fundflow.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'super-secret-key'  # CHANGE THIS in production
+app.config['JWT_SECRET_KEY'] = 'super-secret-key'  # ⚠️ CHANGE THIS in production
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -78,7 +78,8 @@ def login():
 @app.route('/campaigns', methods=['GET', 'POST'])
 def handle_campaigns():
     if request.method == 'GET':
-        campaigns = Campaign.query.all()
+        # Fetch newest campaigns first
+        campaigns = Campaign.query.order_by(Campaign.id.desc()).all()
         return jsonify([c.to_dict() for c in campaigns]), 200
 
     elif request.method == 'POST':
@@ -119,10 +120,17 @@ def handle_campaign(id):
         return jsonify({'error': 'Campaign not found'}), 404
 
     if request.method == 'GET':
-        return jsonify(campaign.to_dict()), 200
+        return jsonify({
+            "id": campaign.id,
+            "title": campaign.title,
+            "description": campaign.description,
+            "funding_goal": campaign.funding_goal,
+            "amount_raised": campaign.amount_raised,
+            "user_id": campaign.user_id,
+            "donations": [d.to_dict() for d in campaign.donations]  # 👈 include donations
+        }), 200
 
     elif request.method in ['PATCH', 'DELETE']:
-        # Protect modification routes
         return modify_campaign_protected(campaign)
 
 
@@ -187,6 +195,16 @@ def create_donation_protected():
     db.session.add(donation)
     db.session.commit()
     return jsonify(donation.to_dict()), 201
+
+
+@app.route('/campaigns/<int:campaign_id>/donations', methods=['GET'])
+def get_campaign_donations(campaign_id):
+    campaign = Campaign.query.get(campaign_id)
+    if not campaign:
+        return jsonify({'error': 'Campaign not found'}), 404
+
+    donations = Donation.query.filter_by(campaign_id=campaign_id).all()
+    return jsonify([d.to_dict() for d in donations]), 200
 
 
 if __name__ == '__main__':
