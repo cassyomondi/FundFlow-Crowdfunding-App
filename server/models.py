@@ -14,7 +14,6 @@ class User(db.Model, SerializerMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
 
-    # Explicit relationships
     campaigns = db.relationship('Campaign', back_populates='creator', cascade='all, delete-orphan')
     donations = db.relationship('Donation', back_populates='donor', cascade='all, delete-orphan')
 
@@ -36,7 +35,6 @@ class Campaign(db.Model, SerializerMixin):
     funding_goal = db.Column(db.Float, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
-    # Explicit relationship
     creator = db.relationship('User', back_populates='campaigns')
     donations = db.relationship('Donation', back_populates='campaign', cascade='all, delete-orphan')
 
@@ -66,7 +64,6 @@ class Donation(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     campaign_id = db.Column(db.Integer, db.ForeignKey('campaigns.id'), nullable=False)
 
-    # Explicit relationships
     donor = db.relationship('User', back_populates='donations')
     campaign = db.relationship('Campaign', back_populates='donations')
 

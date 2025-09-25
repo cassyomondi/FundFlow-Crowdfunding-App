@@ -9,7 +9,7 @@ import os
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fundflow.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'super-secret-key'  # ⚠️ CHANGE THIS in production
+app.config['JWT_SECRET_KEY'] = 'super-secret-key' 
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -17,17 +17,10 @@ bcrypt.init_app(app)
 CORS(app)
 jwt = JWTManager(app)
 
-# ----------------------
-# Home
-# ----------------------
 @app.route('/')
 def home():
     return jsonify({'message': 'Welcome to FundFlow API'})
 
-
-# ----------------------
-# Users
-# ----------------------
 @app.route('/users', methods=['GET', 'POST'])
 def handle_users():
     if request.method == 'GET':
@@ -55,10 +48,6 @@ def handle_users():
         db.session.commit()
         return jsonify(user.to_dict()), 201
 
-
-# ----------------------
-# Login
-# ----------------------
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -72,21 +61,15 @@ def login():
     access_token = create_access_token(identity=user.id)
     return jsonify({'access_token': access_token, 'user': user.to_dict()}), 200
 
-
-# ----------------------
-# Campaigns
-# ----------------------
 @app.route('/campaigns', methods=['GET', 'POST'])
 def handle_campaigns():
     if request.method == 'GET':
-        # Fetch newest campaigns first
+
         campaigns = Campaign.query.order_by(Campaign.id.desc()).all()
         return jsonify([c.to_dict() for c in campaigns]), 200
 
     elif request.method == 'POST':
-        # Require JWT for creating a campaign
         return create_campaign_protected()
-
 
 @jwt_required()
 def create_campaign_protected():
@@ -113,7 +96,6 @@ def create_campaign_protected():
     db.session.commit()
     return jsonify(campaign.to_dict()), 201
 
-
 @app.route('/campaigns/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def handle_campaign(id):
     campaign = db.session.get(Campaign, id)
@@ -128,12 +110,11 @@ def handle_campaign(id):
             "funding_goal": campaign.funding_goal,
             "amount_raised": campaign.amount_raised,
             "user_id": campaign.user_id,
-            "donations": [d.to_dict() for d in campaign.donations]  # 👈 include donations
+            "donations": [d.to_dict() for d in campaign.donations] 
         }), 200
 
     elif request.method in ['PATCH', 'DELETE']:
         return modify_campaign_protected(campaign)
-
 
 @jwt_required()
 def modify_campaign_protected(campaign):
@@ -163,10 +144,6 @@ def modify_campaign_protected(campaign):
         db.session.commit()
         return jsonify({'message': 'Campaign deleted'}), 200
 
-
-# ----------------------
-# Donations
-# ----------------------
 @app.route('/donations', methods=['GET', 'POST'])
 def handle_donations():
     if request.method == 'GET':
@@ -175,7 +152,6 @@ def handle_donations():
 
     elif request.method == 'POST':
         return create_donation_protected()
-
 
 @jwt_required()
 def create_donation_protected():
@@ -197,7 +173,6 @@ def create_donation_protected():
     db.session.commit()
     return jsonify(donation.to_dict()), 201
 
-
 @app.route('/campaigns/<int:campaign_id>/donations', methods=['GET'])
 def get_campaign_donations(campaign_id):
     campaign = Campaign.query.get(campaign_id)
@@ -206,7 +181,6 @@ def get_campaign_donations(campaign_id):
 
     donations = Donation.query.filter_by(campaign_id=campaign_id).all()
     return jsonify([d.to_dict() for d in donations]), 200
-
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
