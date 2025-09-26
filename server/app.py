@@ -4,11 +4,21 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from models import db, User, Campaign, Donation, bcrypt
 import re
+import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fundflow.db'
+
+uri = os.environ.get("DATABASE_URL")
+if not uri:
+    raise RuntimeError("DATABASE_URL environment variable not set!")
+
+# Replace old Postgres URI format if needed
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'super-secret-key'  # ⚠️ CHANGE THIS in production
+app.config['JWT_SECRET_KEY'] = 'super-secret-key'
 
 db.init_app(app)
 migrate = Migrate(app, db)

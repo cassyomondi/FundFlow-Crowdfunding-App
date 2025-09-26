@@ -2,8 +2,9 @@ from app import app, db
 from models import User, Campaign, Donation
 
 with app.app_context():
-    db.drop_all()
-    db.create_all()
+    # Don’t drop_all() or create_all() in production
+    # db.drop_all()
+    # db.create_all()
 
     user1 = User(username='alice', email='alicewambui@gmail.com')
     user1.set_password('password123')
