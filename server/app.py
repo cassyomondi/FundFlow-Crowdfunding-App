@@ -12,11 +12,12 @@ uri = os.environ.get("DATABASE_URL")
 if not uri:
     raise RuntimeError("DATABASE_URL environment variable not set!")
 
-# Replace old Postgres URI format if needed
-# replace postgres:// with postgresql+psycopg://
+# For SQLAlchemy 3.x + psycopg3, must use postgresql+psycopg://
 if uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql+psycopg://", 1)
+
 app.config["SQLALCHEMY_DATABASE_URI"] = uri
+
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'super-secret-key'
