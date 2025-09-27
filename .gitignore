@@ -214,3 +214,17 @@ client/.env
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Server virtualenvs
+server/venv/
+server/.venv/
+
+# Python cache inside server
+server/__pycache__/
+
+# Local SQLite DBs if not needed in repo
+server/instance/*.db
+server/*.sqlite3
+
+# React build artifacts
+client/.vite/
