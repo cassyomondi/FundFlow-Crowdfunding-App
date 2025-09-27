@@ -1,4 +1,4 @@
-from .app import app  # note the dot!
+from server.app import app  # absolute import works with Gunicorn
 
 if __name__ == "__main__":
     app.run()
