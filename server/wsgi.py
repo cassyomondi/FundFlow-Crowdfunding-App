@@ -1,4 +1,4 @@
-from .app import app  # relative import because wsgi.py and app.py are in the same package
+from app import app  # app.py is in same folder as wsgi.py
 
 if __name__ == "__main__":
     app.run()
