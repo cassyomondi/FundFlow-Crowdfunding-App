@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
@@ -8,7 +8,6 @@ import os
 
 
 app = Flask(__name__)
-# Use DATABASE_URL from environment (for Render/Postgres), fallback to SQLite for local/dev
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///fundflow.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'super-secret-key')
@@ -183,6 +182,9 @@ def get_campaign_donations(campaign_id):
 
     donations = Donation.query.filter_by(campaign_id=campaign_id).all()
     return jsonify([d.to_dict() for d in donations]), 200
+
+
+## React static file serving removed for Vercel deployment
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
