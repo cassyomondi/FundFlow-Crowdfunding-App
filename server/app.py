@@ -5,6 +5,9 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 from models import db, User, Campaign, Donation, bcrypt
 import re
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 app = Flask(__name__)
@@ -15,8 +18,9 @@ app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'super-secret-ke
 db.init_app(app)
 migrate = Migrate(app, db)
 bcrypt.init_app(app)
-CORS(app)
+
 jwt = JWTManager(app)
+CORS(app, resources={r"/api/*": {"origins": "https://your-frontend.vercel.app"}})
 
 @app.route('/')
 def home():
