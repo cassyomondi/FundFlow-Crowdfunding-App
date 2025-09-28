@@ -3,7 +3,7 @@ import axios from "axios";
 const API = axios.create({
   baseURL:
     process.env.REACT_APP_API_URL ||
-    "https://fundflow-crowdfunding-app-11.onrender.com",
+    "https://fundflow-crowdfunding-app.onrender.com",
 });
 
 export const setAuthToken = (token) => {
