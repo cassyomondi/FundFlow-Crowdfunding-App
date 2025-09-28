@@ -6,10 +6,12 @@ from models import db, User, Campaign, Donation, bcrypt
 import re
 import os
 
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fundflow.db'
+# Use DATABASE_URL from environment (for Render/Postgres), fallback to SQLite for local/dev
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///fundflow.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'super-secret-key' 
+app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'super-secret-key')
 
 db.init_app(app)
 migrate = Migrate(app, db)
