@@ -4,6 +4,10 @@
 
 A full-stack crowdfunding application that allows users to create campaigns, donate to causes they care about, and track funding progress in real-time.
 
+## Author
+
+Jackson and Cassy
+
 ## screenshot
 
 ![screenshot](campaigns.png)
@@ -65,37 +69,37 @@ git clone https://github.com/cassyomondi/FundFlow-Crowdfunding-App.git
 cd FundFlow-Crowdfunding-App
 ```
 ### 2. Backend Setup
-# Navigate to backend directory
+#### Navigate to backend directory
 ```bash 
 cd server
 ```
 
-# Create virtual environment
+#### Create virtual environment
 ```bash 
 python -m venv venv
 ```
 
-# Activate virtual environment
-# On Windows:
+#### Activate virtual environment
+##### On Windows:
 ```bash 
 venv\Scripts\activate
 ```
-# On Mac/Linux:
+##### On Mac/Linux:
 ```bash 
 source venv/bin/activate
 ```
 
-# Install dependencies
+#### Install dependencies
 ```bash 
 pip install -r requirements.txt
 ```
 
-# Initialize database
+#### Initialize database
 ```bash 
 python seed.py
 ```
 
-# Start the backend server
+#### Start the backend server
 ```bash 
 python app.py
 ```
@@ -103,17 +107,17 @@ python app.py
 The backend will run on http://127.0.0.1:5000
 
 ### 3. Frontend Setup
-# Open new terminal and navigate to frontend
+#### Open new terminal and navigate to frontend
 ```bash 
 cd client
 ```
 
-# Install dependencies
+#### Install dependencies
 ```bash 
 npm install
 ```
 
-# Start the development server
+#### Start the development server
 ```bash 
 npm start
 ```
