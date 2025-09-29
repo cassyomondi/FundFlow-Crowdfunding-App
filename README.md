@@ -123,7 +123,7 @@ The frontend will run on http://localhost:3000
 Models
 - **Users**: id, username, email, password_hash
 
--**Campaigns**: id, title, description, funding_goal, user_id
+- **Campaigns**: id, title, description, funding_goal, user_id
 
 - **Donations**: id, amount, user_id, campaign_id
 
