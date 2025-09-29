@@ -9,7 +9,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///fundflow.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -20,7 +19,7 @@ migrate = Migrate(app, db)
 bcrypt.init_app(app)
 
 jwt = JWTManager(app)
-CORS(app, resources={r"/api/*": {"origins": "https://your-frontend.vercel.app"}})
+CORS(app, resources={r"/*": {"origins": "https://fundflow-crowdfundingapp-5l1o.vercel.app"}})
 
 @app.route('/')
 def home():
@@ -69,10 +68,8 @@ def login():
 @app.route('/campaigns', methods=['GET', 'POST'])
 def handle_campaigns():
     if request.method == 'GET':
-
         campaigns = Campaign.query.order_by(Campaign.id.desc()).all()
         return jsonify([c.to_dict() for c in campaigns]), 200
-
     elif request.method == 'POST':
         return create_campaign_protected()
 
@@ -115,9 +112,8 @@ def handle_campaign(id):
             "funding_goal": campaign.funding_goal,
             "amount_raised": campaign.amount_raised,
             "user_id": campaign.user_id,
-            "donations": [d.to_dict() for d in campaign.donations] 
+            "donations": [d.to_dict() for d in campaign.donations]
         }), 200
-
     elif request.method in ['PATCH', 'DELETE']:
         return modify_campaign_protected(campaign)
 
@@ -154,7 +150,6 @@ def handle_donations():
     if request.method == 'GET':
         donations = Donation.query.all()
         return jsonify([d.to_dict() for d in donations]), 200
-
     elif request.method == 'POST':
         return create_donation_protected()
 
@@ -186,9 +181,6 @@ def get_campaign_donations(campaign_id):
 
     donations = Donation.query.filter_by(campaign_id=campaign_id).all()
     return jsonify([d.to_dict() for d in donations]), 200
-
-
-## React static file serving removed for Vercel deployment
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
