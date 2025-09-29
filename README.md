@@ -4,9 +4,10 @@
 
 A full-stack crowdfunding application that allows users to create campaigns, donate to causes they care about, and track funding progress in real-time.
 
-## Author
+## Authors
 
-Jackson and Cassy
+- **Jackson Mungai**
+- **Cassy Omondi**
 
 ## screenshot
 
