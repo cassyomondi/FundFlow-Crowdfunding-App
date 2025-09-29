@@ -4,6 +4,10 @@
 
 A full-stack crowdfunding application that allows users to create campaigns, donate to causes they care about, and track funding progress in real-time.
 
+## screenshot
+
+![screenshot](campaigns.png)
+
 ## Features
 
 ### Backend (Flask API)
@@ -35,6 +39,17 @@ A full-stack crowdfunding application that allows users to create campaigns, don
 - **Styling**: Inline styling
 - **HTTP Client**: Fetch API for backend communication
 
+---
+
+## Live Demo
+
+You can try out the deployed version of the app without installing anything locally:
+
+- **Frontend App**: [https://fundflow-crowdfundingapp-5l1o.vercel.app/](https://fundflow-crowdfundingapp-5l1o.vercel.app/)  
+- **Backend API**: [https://fundflow-crowdfunding-app.onrender.com](https://fundflow-crowdfunding-app.onrender.com)
+
+---
+
 ## Prerequisites
 
 Before running this project, make sure you have installed:
@@ -45,44 +60,63 @@ Before running this project, make sure you have installed:
 ## Installation & Setup
 
 ### 1. Clone the Repository
-``bash 
+```bash 
 git clone https://github.com/cassyomondi/FundFlow-Crowdfunding-App.git
 cd FundFlow-Crowdfunding-App
-
+```
 ### 2. Backend Setup
 # Navigate to backend directory
+```bash 
 cd server
+```
 
 # Create virtual environment
+```bash 
 python -m venv venv
+```
 
 # Activate virtual environment
 # On Windows:
+```bash 
 venv\Scripts\activate
+```
 # On Mac/Linux:
+```bash 
 source venv/bin/activate
+```
 
 # Install dependencies
+```bash 
 pip install -r requirements.txt
+```
 
 # Initialize database
+```bash 
 python seed.py
+```
 
 # Start the backend server
+```bash 
 python app.py
+```
 
 The backend will run on http://127.0.0.1:5000
 
-3. Frontend Setup
-bash
+### 3. Frontend Setup
 # Open new terminal and navigate to frontend
+```bash 
 cd client
+```
 
 # Install dependencies
+```bash 
 npm install
+```
 
 # Start the development server
+```bash 
 npm start
+```
 The frontend will run on http://localhost:3000
 
 ## Database Schema
@@ -143,14 +177,17 @@ Relationships
 3. Test all endpoints with provided examples
 
 - **Example API Calls**
-  ```bash
 - **Get all campaigns**
+```bash 
 curl http://127.0.0.1:5000/campaigns
+```
 
 - **Create a new user**
+```bash 
 curl -X POST http://127.0.0.1:5000/users \
   -H "Content-Type: application/json" \
   -d '{"username":"testuser","email":"test@example.com","password":"password123"}'
+  ```
 
 
 ## Team Roles & Contributions
