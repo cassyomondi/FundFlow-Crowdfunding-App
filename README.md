@@ -4,6 +4,14 @@
 
 A full-stack crowdfunding application that allows users to create campaigns, donate to causes they care about, and track funding progress in real-time.
 
+## Author
+
+Jackson and Cassy
+
+## screenshot
+
+![screenshot](campaigns.png)
+
 ## Features
 
 ### Backend (Flask API)
@@ -35,6 +43,17 @@ A full-stack crowdfunding application that allows users to create campaigns, don
 - **Styling**: Inline styling
 - **HTTP Client**: Fetch API for backend communication
 
+---
+
+## Live Demo
+
+You can try out the deployed version of the app without installing anything locally:
+
+- **Frontend App**: [https://fundflow-crowdfundingapp-5l1o.vercel.app/](https://fundflow-crowdfundingapp-5l1o.vercel.app/)  
+- **Backend API**: [https://fundflow-crowdfunding-app.onrender.com](https://fundflow-crowdfunding-app.onrender.com)
+
+---
+
 ## Prerequisites
 
 Before running this project, make sure you have installed:
@@ -45,87 +64,70 @@ Before running this project, make sure you have installed:
 ## Installation & Setup
 
 ### 1. Clone the Repository
-``bash 
+```bash 
 git clone https://github.com/cassyomondi/FundFlow-Crowdfunding-App.git
 cd FundFlow-Crowdfunding-App
-
+```
 ### 2. Backend Setup
 #### Navigate to backend directory
+```bash 
 cd server
+```
 
 #### Create virtual environment
+```bash 
 python -m venv venv
+```
 
 #### Activate virtual environment
-#### On Windows:
+##### On Windows:
+```bash 
 venv\Scripts\activate
-#### On Mac/Linux:
+```
+##### On Mac/Linux:
+```bash 
 source venv/bin/activate
+```
 
 #### Install dependencies
+```bash 
 pip install -r requirements.txt
+```
 
 #### Initialize database
+```bash 
 python seed.py
+```
 
 #### Start the backend server
+```bash 
 python app.py
+```
 
 The backend will run on http://127.0.0.1:5000
 
-3. Frontend Setup
-bash
+### 3. Frontend Setup
 #### Open new terminal and navigate to frontend
+```bash 
 cd client
+```
 
 #### Install dependencies
+```bash 
 npm install
+```
 
 #### Start the development server
+```bash 
 npm start
+```
 The frontend will run on http://localhost:3000
-
-## Deployment
-
-### Backend (Render)
-The Flask API is deployed on [Render](https://render.com).
-
-1. Push your changes to GitHub.
-2. Connect your repository to Render.
-3. Add a **Web Service** with the following settings:
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `./start.sh` (or `gunicorn app:app --bind 0.0.0.0:$PORT --workers 3`)
-   - **Environment Variables**:  
-     - `DATABASE_URL` = your PostgreSQL database URL  
-     - `JWT_SECRET_KEY` = your secret key  
-     - `FLASK_ENV` = production  
-
-The API will be live at a Render-generated domain (e.g. `https://fundflow-crowdfunding-app.onrender.com`).
-
----
-
-### Frontend (Vercel)
-The React frontend is deployed on [Vercel](https://vercel.com).
-
-1. Push your changes to GitHub.
-2. Connect the frontend repo (or `/client` folder) to Vercel.
-3. Add environment variable:
-   - `REACT_APP_API_URL` = your Render backend URL (e.g. `https://fundflow-crowdfunding-app.onrender.com`)
-4. Vercel will auto-deploy your frontend and provide a domain (e.g. `https://fundflow-crowdfundingapp.vercel.app`).
-
----
-
-### CORS Setup
-Make sure the backend allows requests from the deployed frontend:
-```python```
-CORS(app, resources={r"/*": {"origins": "https://fundflow-crowdfundingapp.vercel.app"}})
-
 
 ## Database Schema
 Models
 - **Users**: id, username, email, password_hash
 
--**Campaigns**: id, title, description, funding_goal, user_id
+- **Campaigns**: id, title, description, funding_goal, user_id
 
 - **Donations**: id, amount, user_id, campaign_id
 
@@ -179,14 +181,17 @@ Relationships
 3. Test all endpoints with provided examples
 
 - **Example API Calls**
-  ```bash```
 - **Get all campaigns**
+```bash 
 curl http://127.0.0.1:5000/campaigns
+```
 
 - **Create a new user**
+```bash 
 curl -X POST http://127.0.0.1:5000/users \
   -H "Content-Type: application/json" \
   -d '{"username":"testuser","email":"test@example.com","password":"password123"}'
+  ```
 
 
 ## Team Roles & Contributions
